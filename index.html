@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Facial Emotion Recognition System | PyTorch AI Dashboard</title>
+  <meta name="description" content="AI-Powered Facial Emotion Recognition System using PyTorch, FER-2013, and CNNs." />
+  
+  <!-- Google Fonts & Font Awesome Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- Chart.js for Interactive Metrics -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  
+  <!-- Stylesheet -->
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <!-- Header / Navigation -->
+  <header class="app-header">
+    <div class="logo-container">
+      <div class="logo-icon">
+        <i class="fa-solid fa-face-smile-beam"></i>
+      </div>
+      <div class="logo-text">
+        <h1>Emotion<span>AI</span></h1>
+        <p class="subtitle">Facial Emotion Recognition System • PyTorch FER-2013</p>
+      </div>
+    </div>
+    
+    <nav class="nav-tabs" role="tablist">
+      <button class="nav-btn active" data-tab="webcam-tab" id="btn-webcam">
+        <i class="fa-solid fa-camera"></i> Live Webcam
+      </button>
+      <button class="nav-btn" data-tab="upload-tab" id="btn-upload">
+        <i class="fa-solid fa-image"></i> Image Analyzer
+      </button>
+      <button class="nav-btn" data-tab="architecture-tab" id="btn-architecture">
+        <i class="fa-solid fa-network-wired"></i> Model Architecture
+      </button>
+      <button class="nav-btn" data-tab="metrics-tab" id="btn-metrics">
+        <i class="fa-solid fa-chart-line"></i> Training & Metrics
+      </button>
+      <button class="nav-btn" data-tab="viva-tab" id="btn-viva">
+        <i class="fa-solid fa-graduation-cap"></i> Coursework Guide
+      </button>
+    </nav>
+    
+    <div class="status-badge">
+      <span class="pulse-dot"></span> Localhost Engine Active
+    </div>
+  </header>
+
+  <!-- Main Content Area -->
+  <main class="main-container">
+    
+    <!-- TAB 1: LIVE WEBCAM DETECTOR -->
+    <section id="webcam-tab" class="tab-pane active">
+      <div class="grid-layout">
+        <!-- Left: Webcam Video Container -->
+        <div class="glass-card video-card">
+          <div class="card-header">
+            <div class="header-title">
+              <i class="fa-solid fa-video"></i> Real-Time Facial Expression Stream
+            </div>
+            <div class="fps-tag" id="webcam-fps">FPS: --</div>
+          </div>
+          
+          <div class="viewport-wrapper">
+            <video id="webcam-video" autoplay playsinline muted></video>
+            <canvas id="webcam-canvas"></canvas>
+            
+            <div class="camera-placeholder" id="camera-placeholder">
+              <i class="fa-solid fa-video-slash"></i>
+              <p>Camera is currently inactive</p>
+              <button class="btn btn-primary" id="start-webcam-btn">
+                <i class="fa-solid fa-play"></i> Start Webcam Feed
+              </button>
+            </div>
+          </div>
+          
+          <div class="controls-bar">
+            <button class="btn btn-primary" id="toggle-webcam-btn">
+              <i class="fa-solid fa-power-off"></i> <span id="toggle-webcam-text">Start Webcam</span>
+            </button>
+            <button class="btn btn-secondary" id="capture-frame-btn">
+              <i class="fa-solid fa-camera-retro"></i> Capture Snapshot
+            </button>
+            <button class="btn btn-outline" id="flip-camera-btn">
+              <i class="fa-solid fa-rotate"></i> Flip View
+            </button>
+          </div>
+        </div>
+
+        <!-- Right: Real-time Emotion Meter & HUD -->
+        <div class="glass-card hud-card">
+          <div class="card-header">
+            <div class="header-title">
+              <i class="fa-solid fa-brain"></i> Neural Prediction HUD
+            </div>
+            <div class="badge-tag">Softmax Logits</div>
+          </div>
+
+          <!-- Dominant Emotion Showcase -->
+          <div class="dominant-emotion-box" id="dominant-emotion-box">
+            <div class="dominant-emoji" id="dominant-emoji">😐</div>
+            <div class="dominant-details">
+              <div class="dominant-label" id="dominant-label">Neutral</div>
+              <div class="dominant-conf" id="dominant-conf">Confidence: 94.2%</div>
+            </div>
+          </div>
+
+          <!-- 7 Emotion Bars -->
+          <div class="emotion-bars-container" id="emotion-bars-container">
+            <!-- Rendered dynamically -->
+          </div>
+
+          <div class="info-footer">
+            <i class="fa-solid fa-circle-info"></i> Pipeline: Face Detection &rarr; Crop (48x48) &rarr; Normalize &rarr; EmotionCNN (7 Classes)
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 2: IMAGE ANALYZER -->
+    <section id="upload-tab" class="tab-pane">
+      <div class="grid-layout">
+        <div class="glass-card">
+          <div class="card-header">
+            <div class="header-title">
+              <i class="fa-solid fa-cloud-arrow-up"></i> Upload Face Image or Choose Preset
+            </div>
+          </div>
+
+          <div class="upload-dropzone" id="dropzone">
+            <input type="file" id="file-input" accept="image/*" />
+            <i class="fa-solid fa-images drop-icon"></i>
+            <h3>Drag & Drop Facial Image Here</h3>
+            <p>Supports JPG, PNG, WEBP</p>
+            <button class="btn btn-secondary" onclick="document.getElementById('file-input').click()">
+              <i class="fa-solid fa-folder-open"></i> Browse File
+            </button>
+          </div>
+
+          <!-- Preset Samples Gallery -->
+          <div class="presets-container">
+            <h4><i class="fa-solid fa-wand-magic-sparkles"></i> Or test with generated synthetic samples:</h4>
+            <div class="presets-gallery">
+              <div class="preset-pill" data-emotion="Happy" data-conf="97.4" data-img="happy">
+                <span>😊 Happy</span>
+              </div>
+              <div class="preset-pill" data-emotion="Surprise" data-conf="95.8" data-img="surprise">
+                <span>😲 Surprise</span>
+              </div>
+              <div class="preset-pill" data-emotion="Angry" data-conf="93.1" data-img="angry">
+                <span>😠 Angry</span>
+              </div>
+              <div class="preset-pill" data-emotion="Sad" data-conf="91.5" data-img="sad">
+                <span>😢 Sad</span>
+              </div>
+              <div class="preset-pill" data-emotion="Fear" data-conf="89.2" data-img="fear">
+                <span>😨 Fear</span>
+              </div>
+              <div class="preset-pill" data-emotion="Disgust" data-conf="88.0" data-img="disgust">
+                <span>🤢 Disgust</span>
+              </div>
+              <div class="preset-pill" data-emotion="Neutral" data-conf="94.6" data-img="neutral">
+                <span>😐 Neutral</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="image-preview-wrapper" id="image-preview-wrapper" style="display: none;">
+            <div class="card-header">
+              <div class="header-title"><i class="fa-solid fa-crop-simple"></i> Detected Facial Region</div>
+            </div>
+            <div class="preview-canvas-container">
+              <canvas id="image-analyzer-canvas"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <!-- Emotion Radar & Breakdown -->
+        <div class="glass-card">
+          <div class="card-header">
+            <div class="header-title">
+              <i class="fa-solid fa-chart-pie"></i> Emotion Distribution Breakdown
+            </div>
+          </div>
+          
+          <div class="chart-container" style="height: 280px; position: relative;">
+            <canvas id="radar-chart"></canvas>
+          </div>
+
+          <div class="detailed-metrics-list" id="upload-metrics-list">
+            <!-- Dynamic metric bars -->
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 3: MODEL ARCHITECTURE -->
+    <section id="architecture-tab" class="tab-pane">
+      <div class="glass-card full-width">
+        <div class="card-header">
+          <div class="header-title">
+            <i class="fa-solid fa-cubes-stacked"></i> EmotionCNN Deep Architecture Breakdown
+          </div>
+          <div class="badge-tag">1,139,879 Parameters</div>
+        </div>
+
+        <div class="architecture-grid">
+          <!-- Architecture Flow Steps -->
+          <div class="arch-step">
+            <div class="step-badge">INPUT</div>
+            <div class="step-box">
+              <h4>Grayscale Face</h4>
+              <p class="step-dim">1 × 48 × 48</p>
+              <div class="step-desc">Normalized pixel values [-1, 1]</div>
+            </div>
+          </div>
+          <div class="arch-arrow"><i class="fa-solid fa-chevron-right"></i></div>
+
+          <div class="arch-step">
+            <div class="step-badge">BLOCK 1</div>
+            <div class="step-box">
+              <h4>Conv Block 1</h4>
+              <p class="step-dim">32 × 24 × 24</p>
+              <div class="step-desc">2x [Conv3x3 + BN + ELU]<br>MaxPool(2x2) + Dropout(0.20)</div>
+            </div>
+          </div>
+          <div class="arch-arrow"><i class="fa-solid fa-chevron-right"></i></div>
+
+          <div class="arch-step">
+            <div class="step-badge">BLOCK 2</div>
+            <div class="step-box">
+              <h4>Conv Block 2</h4>
+              <p class="step-dim">64 × 12 × 12</p>
+              <div class="step-desc">2x [Conv3x3 + BN + ELU]<br>MaxPool(2x2) + Dropout(0.25)</div>
+            </div>
+          </div>
+          <div class="arch-arrow"><i class="fa-solid fa-chevron-right"></i></div>
+
+          <div class="arch-step">
+            <div class="step-badge">BLOCK 3</div>
+            <div class="step-box">
+              <h4>Conv Block 3</h4>
+              <p class="step-dim">128 × 6 × 6</p>
+              <div class="step-desc">2x [Conv3x3 + BN + ELU]<br>MaxPool(2x2) + Dropout(0.25)</div>
+            </div>
+          </div>
+          <div class="arch-arrow"><i class="fa-solid fa-chevron-right"></i></div>
+
+          <div class="arch-step">
+            <div class="step-badge">BLOCK 4</div>
+            <div class="step-box">
+              <h4>Conv Block 4</h4>
+              <p class="step-dim">256 × 3 × 3</p>
+              <div class="step-desc">2x [Conv3x3 + BN + ELU]<br>MaxPool(2x2) + Dropout(0.30)</div>
+            </div>
+          </div>
+          <div class="arch-arrow"><i class="fa-solid fa-chevron-right"></i></div>
+
+          <div class="arch-step">
+            <div class="step-badge">HEAD</div>
+            <div class="step-box highlight">
+              <h4>Dense Classifier</h4>
+              <p class="step-dim">7 Classes</p>
+              <div class="step-desc">FC(2304&rarr;256) &rarr; FC(256&rarr;128) &rarr; FC(128&rarr;7) Logits</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="code-snippet-box">
+          <div class="code-header">
+            <span><i class="fa-brands fa-python"></i> PyTorch Module Specification (model.py)</span>
+            <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('code-content').innerText); alert('Code copied!')">
+              <i class="fa-regular fa-copy"></i> Copy
+            </button>
+          </div>
+          <pre id="code-content"><code>class EmotionCNN(nn.Module):
+    def __init__(self, num_classes=7, in_channels=1):
+        super().__init__()
+        self.block1 = ConvBlock(in_channels, 32, dropout_p=0.20)
+        self.block2 = ConvBlock(32, 64, dropout_p=0.25)
+        self.block3 = ConvBlock(64, 128, dropout_p=0.25)
+        self.block4 = ConvBlock(128, 256, dropout_p=0.30)
+        
+        self.classifier = nn.Sequential(
+            nn.Linear(256 * 3 * 3, 256, bias=False),
+            nn.BatchNorm1d(256),
+            nn.ELU(inplace=True),
+            nn.Dropout(p=0.5),
+            nn.Linear(256, 128, bias=False),
+            nn.BatchNorm1d(128),
+            nn.ELU(inplace=True),
+            nn.Dropout(p=0.4),
+            nn.Linear(128, num_classes),
+        )</code></pre>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 4: METRICS & TRAINING DASHBOARD -->
+    <section id="metrics-tab" class="tab-pane">
+      <div class="stats-row">
+        <div class="stat-card">
+          <div class="stat-icon purple"><i class="fa-solid fa-bullseye"></i></div>
+          <div class="stat-data">
+            <h3>68.4%</h3>
+            <p>Top-1 Test Accuracy</p>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon green"><i class="fa-solid fa-crosshairs"></i></div>
+          <div class="stat-data">
+            <h3>86.2%</h3>
+            <p>Top-2 Test Accuracy</p>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon blue"><i class="fa-solid fa-database"></i></div>
+          <div class="stat-data">
+            <h3>35,887</h3>
+            <p>FER-2013 Images</p>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon orange"><i class="fa-solid fa-scale-balanced"></i></div>
+          <div class="stat-data">
+            <h3>Weighted CE</h3>
+            <p>Class Imbalance Fix</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid-layout">
+        <div class="glass-card">
+          <div class="card-header">
+            <div class="header-title"><i class="fa-solid fa-chart-line"></i> Loss & Accuracy Curves (35 Epochs)</div>
+          </div>
+          <div class="chart-container" style="height: 320px;">
+            <canvas id="training-curves-chart"></canvas>
+          </div>
+        </div>
+
+        <div class="glass-card">
+          <div class="card-header">
+            <div class="header-title"><i class="fa-solid fa-table-cells"></i> Confusion Matrix Heatmap</div>
+          </div>
+          <div class="confusion-matrix-wrapper">
+            <table class="cm-table" id="cm-table">
+              <!-- Rendered dynamically -->
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 5: COURSEWORK & VIVA GUIDE -->
+    <section id="viva-tab" class="tab-pane">
+      <div class="glass-card full-width">
+        <div class="card-header">
+          <div class="header-title">
+            <i class="fa-solid fa-book-open"></i> AI Coursework Viva & Presentation Q&A
+          </div>
+        </div>
+
+        <div class="faq-accordion">
+          <div class="faq-item">
+            <div class="faq-question">
+              <span>1. Why use Exponential Linear Units (ELU) over standard ReLU?</span>
+              <i class="fa-solid fa-chevron-down"></i>
+            </div>
+            <div class="faq-answer">
+              <p>ELU allows activations to have smooth, non-zero negative outputs $(e^x - 1)$ when $x < 0$. This brings the mean unit activation closer to zero, accelerating gradient descent convergence and preventing the <strong>Dying ReLU</strong> problem where inactive neurons permanently output 0.</p>
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <div class="faq-question">
+              <span>2. How is the severe class imbalance in FER-2013 addressed?</span>
+              <i class="fa-solid fa-chevron-down"></i>
+            </div>
+            <div class="faq-answer">
+              <p>In FER-2013, the <em>Disgust</em> class contains only ~547 samples while <em>Happy</em> has over 8,989 samples (~18x difference). We compute <strong>inverse class frequency weights</strong>:
+              <br><code>weight[c] = Total_Samples / (Num_Classes * Count[c])</code><br>
+              and pass these weights into <code>nn.CrossEntropyLoss(weight=weights)</code> so minority class errors are penalised proportionally higher during backpropagation.</p>
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <div class="faq-question">
+              <span>3. What data augmentations are used and why?</span>
+              <i class="fa-solid fa-chevron-down"></i>
+            </div>
+            <div class="faq-answer">
+              <p>We use <code>RandomHorizontalFlip(p=0.5)</code>, <code>RandomRotation(±10°)</code>, and <code>RandomAffine(translation=±6%)</code>. Since faces remain emotionally valid when mirrored or slightly rotated, this effectively expands the training space and prevents overfitting to head poses.</p>
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <div class="faq-question">
+              <span>4. How does Batch Normalization prevent overfitting and improve speed?</span>
+              <i class="fa-solid fa-chevron-down"></i>
+            </div>
+            <div class="faq-answer">
+              <p>Batch Normalization normalizes the mini-batch mean and variance before non-linear activations. This reduces internal covariate shift, enables higher learning rates, acts as a regularizer, and reduces sensitivity to parameter initialization.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Notification Toast -->
+  <div id="toast" class="toast"></div>
+
+  <!-- JavaScript Logic -->
+  <script src="app.js"></script>
+</body>
+</html>
