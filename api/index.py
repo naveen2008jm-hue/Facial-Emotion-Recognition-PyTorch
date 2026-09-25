@@ -92,8 +92,32 @@ def extract_face_features(img_pil: Image.Image) -> list:
 def root():
     html_path = os.path.join(ROOT_DIR, "index.html")
     if os.path.exists(html_path):
-        return send_file(html_path)
+        return send_file(html_path, mimetype="text/html")
     return jsonify({"status": "online", "message": "EmotionAI API"})
+
+
+@app.route("/style.css", methods=["GET"])
+def style():
+    css_path = os.path.join(ROOT_DIR, "style.css")
+    if os.path.exists(css_path):
+        return send_file(css_path, mimetype="text/css")
+    return "", 404
+
+
+@app.route("/app.js", methods=["GET"])
+def app_script():
+    js_path = os.path.join(ROOT_DIR, "app.js")
+    if os.path.exists(js_path):
+        return send_file(js_path, mimetype="application/javascript")
+    return "", 404
+
+
+@app.route("/data/sample_faces/<path:filename>", methods=["GET"])
+def sample_faces(filename):
+    faces_dir = os.path.join(ROOT_DIR, "data", "sample_faces")
+    if os.path.exists(os.path.join(faces_dir, filename)):
+        return send_from_directory(faces_dir, filename)
+    return "", 404
 
 
 @app.route("/api/health", methods=["GET"])

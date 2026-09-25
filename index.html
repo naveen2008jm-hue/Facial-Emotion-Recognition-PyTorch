@@ -16,7 +16,772 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
   
   <!-- Stylesheet -->
-  <link rel="stylesheet" href="style.css" />
+  <style>
+/* =========================================================
+   STYLE.CSS - Facial Emotion Recognition Web Dashboard
+   Theme: Modern Dark Mode, Glassmorphism, Vibrant AI Accents
+   ========================================================= */
+
+:root {
+  --bg-dark: #0a0e17;
+  --bg-card: rgba(18, 24, 38, 0.75);
+  --bg-card-hover: rgba(26, 35, 54, 0.85);
+  --border-color: rgba(255, 255, 255, 0.08);
+  --border-glow: rgba(99, 102, 241, 0.4);
+  
+  --text-primary: #f8fafc;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b;
+
+  --accent-primary: #6366f1; /* Indigo */
+  --accent-cyan: #06b6d4;
+  --accent-purple: #a855f7;
+  --accent-green: #10b981;
+  --accent-yellow: #f59e0b;
+  --accent-red: #ef4444;
+  --accent-blue: #3b82f6;
+
+  --radius-lg: 16px;
+  --radius-md: 10px;
+  --radius-sm: 6px;
+
+  --shadow-card: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+  --shadow-glow: 0 0 25px rgba(99, 102, 241, 0.25);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  background-color: var(--bg-dark);
+  background-image: 
+    radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.15) 0px, transparent 50%),
+    radial-gradient(at 100% 100%, rgba(6, 182, 212, 0.12) 0px, transparent 50%);
+  background-attachment: fixed;
+  color: var(--text-primary);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ---------------- HEADER ---------------- */
+.app-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 2rem;
+  background: rgba(10, 14, 23, 0.8);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border-color);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.logo-container {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.logo-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, var(--accent-primary), var(--accent-cyan));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.4rem;
+  color: white;
+  box-shadow: 0 4px 14px rgba(99, 102, 241, 0.4);
+}
+
+.logo-text h1 {
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.4rem;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+}
+
+.logo-text h1 span {
+  color: var(--accent-cyan);
+}
+
+.logo-text .subtitle {
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+}
+
+.nav-tabs {
+  display: flex;
+  gap: 6px;
+  background: rgba(255, 255, 255, 0.04);
+  padding: 4px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-color);
+}
+
+.nav-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  padding: 8px 16px;
+  border-radius: var(--radius-sm);
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.nav-btn:hover {
+  color: var(--text-primary);
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.nav-btn.active {
+  color: white;
+  background: var(--accent-primary);
+  box-shadow: 0 2px 10px rgba(99, 102, 241, 0.4);
+}
+
+.status-badge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.8rem;
+  color: var(--accent-green);
+  background: rgba(16, 185, 129, 0.1);
+  padding: 6px 14px;
+  border-radius: 20px;
+  border: 1px solid rgba(16, 185, 129, 0.25);
+  font-weight: 500;
+}
+
+.pulse-dot {
+  width: 8px;
+  height: 8px;
+  background: var(--accent-green);
+  border-radius: 50%;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+  70% { transform: scale(1); box-shadow: 0 0 0 8px rgba(16, 185, 129, 0); }
+  100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+}
+
+/* ---------------- LAYOUT ---------------- */
+.main-container {
+  flex: 1;
+  padding: 2rem;
+  max-width: 1400px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.tab-pane {
+  display: none;
+  animation: fadeIn 0.3s ease;
+}
+
+.tab-pane.active {
+  display: block;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.grid-layout {
+  display: grid;
+  grid-template-columns: 1.2fr 0.8fr;
+  gap: 1.5rem;
+}
+
+@media (max-width: 992px) {
+  .grid-layout { grid-template-columns: 1fr; }
+  .app-header { flex-direction: column; gap: 1rem; }
+  .nav-tabs { overflow-x: auto; max-width: 100%; }
+}
+
+/* ---------------- CARDS & GLASSMORPHISM ---------------- */
+.glass-card {
+  background: var(--bg-card);
+  backdrop-filter: blur(16px);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem;
+  box-shadow: var(--shadow-card);
+  transition: border-color 0.25s ease;
+}
+
+.glass-card:hover {
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+.glass-card.full-width {
+  grid-column: 1 / -1;
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.2rem;
+  padding-bottom: 0.8rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.header-title {
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.1rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--text-primary);
+}
+
+.badge-tag, .fps-tag {
+  font-size: 0.75rem;
+  font-family: 'JetBrains Mono', monospace;
+  padding: 4px 10px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--text-secondary);
+}
+
+.fps-tag {
+  color: var(--accent-cyan);
+  background: rgba(6, 182, 212, 0.1);
+}
+
+/* ---------------- WEBCAM VIEWPORT ---------------- */
+.viewport-wrapper {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  background: #000;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  border: 1px solid var(--border-color);
+}
+
+#webcam-video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: scaleX(-1); /* mirror */
+}
+
+#webcam-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.camera-placeholder {
+  position: absolute;
+  inset: 0;
+  background: #0d131f;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  color: var(--text-muted);
+}
+
+.camera-placeholder i {
+  font-size: 3.5rem;
+  opacity: 0.4;
+}
+
+.controls-bar {
+  display: flex;
+  gap: 10px;
+  margin-top: 1.2rem;
+}
+
+/* ---------------- BUTTONS ---------------- */
+.btn {
+  padding: 10px 18px;
+  border-radius: var(--radius-md);
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s ease;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--accent-primary), #4f46e5);
+  color: white;
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+}
+
+.btn-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(99, 102, 241, 0.5);
+}
+
+.btn-secondary {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--text-primary);
+}
+
+.btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.14);
+}
+
+.btn-outline {
+  background: transparent;
+  border: 1px solid var(--border-color);
+  color: var(--text-secondary);
+}
+
+.btn-outline:hover {
+  border-color: var(--text-primary);
+  color: var(--text-primary);
+}
+
+/* ---------------- HUD & EMOTION BARS ---------------- */
+.dominant-emotion-box {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.15), rgba(6, 182, 212, 0.1));
+  border: 1px solid var(--border-glow);
+  padding: 1.2rem;
+  border-radius: var(--radius-md);
+  margin-bottom: 1.2rem;
+}
+
+.dominant-emoji {
+  font-size: 3rem;
+  line-height: 1;
+}
+
+.dominant-label {
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: white;
+}
+
+.dominant-conf {
+  font-size: 0.85rem;
+  color: var(--accent-cyan);
+  font-weight: 500;
+}
+
+.emotion-bars-container {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.emotion-bar-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.bar-meta {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.82rem;
+  font-weight: 500;
+}
+
+.bar-name {
+  color: var(--text-secondary);
+}
+
+.bar-val {
+  font-family: 'JetBrains Mono', monospace;
+  color: var(--text-primary);
+}
+
+.bar-track {
+  height: 8px;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 4px;
+  overflow: hidden;
+  position: relative;
+}
+
+.bar-fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.25s ease, background-color 0.25s ease;
+}
+
+.info-footer {
+  margin-top: 1.2rem;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding-top: 0.8rem;
+  border-top: 1px solid var(--border-color);
+}
+
+/* ---------------- UPLOAD & PRESETS ---------------- */
+.upload-dropzone {
+  border: 2px dashed var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: 2.5rem 1.5rem;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.upload-dropzone:hover, .upload-dropzone.dragover {
+  border-color: var(--accent-primary);
+  background: rgba(99, 102, 241, 0.05);
+}
+
+.upload-dropzone input[type="file"] {
+  display: none;
+}
+
+.drop-icon {
+  font-size: 2.5rem;
+  color: var(--accent-primary);
+}
+
+.presets-container {
+  margin-top: 1.2rem;
+}
+
+.presets-container h4 {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  margin-bottom: 8px;
+  font-weight: 500;
+}
+
+.presets-gallery {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.preset-pill {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border-color);
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 0.82rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.preset-pill:hover {
+  background: var(--accent-primary);
+  border-color: var(--accent-primary);
+  color: white;
+  transform: translateY(-2px);
+}
+
+.preview-canvas-container {
+  margin-top: 1rem;
+  display: flex;
+  justify-content: center;
+}
+
+#image-analyzer-canvas {
+  max-width: 100%;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-color);
+}
+
+/* ---------------- ARCHITECTURE STEPPER ---------------- */
+.architecture-grid {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  overflow-x: auto;
+  padding: 1.5rem 0;
+}
+
+.arch-step {
+  flex: 1;
+  min-width: 150px;
+}
+
+.step-badge {
+  font-size: 0.7rem;
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 700;
+  color: var(--accent-cyan);
+  margin-bottom: 6px;
+  text-transform: uppercase;
+}
+
+.step-box {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--border-color);
+  padding: 1rem;
+  border-radius: var(--radius-md);
+  transition: all 0.2s ease;
+}
+
+.step-box:hover {
+  border-color: var(--accent-primary);
+  transform: translateY(-3px);
+}
+
+.step-box.highlight {
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.15), rgba(168, 85, 247, 0.15));
+  border-color: var(--accent-primary);
+}
+
+.step-box h4 {
+  font-size: 0.95rem;
+  margin-bottom: 4px;
+}
+
+.step-dim {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.8rem;
+  color: var(--accent-cyan);
+  margin-bottom: 6px;
+}
+
+.step-desc {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  line-height: 1.3;
+}
+
+.arch-arrow {
+  color: var(--text-muted);
+  font-size: 1rem;
+  opacity: 0.5;
+}
+
+.code-snippet-box {
+  margin-top: 1.5rem;
+  background: #070a10;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-color);
+  overflow: hidden;
+}
+
+.code-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 14px;
+  background: rgba(255, 255, 255, 0.03);
+  border-bottom: 1px solid var(--border-color);
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+
+.copy-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  font-size: 0.78rem;
+}
+
+.code-snippet-box pre {
+  padding: 1.2rem;
+  overflow-x: auto;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.82rem;
+  line-height: 1.5;
+  color: #a5b4fc;
+}
+
+/* ---------------- STATS & CHARTS ---------------- */
+.stats-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.2rem;
+  margin-bottom: 1.5rem;
+}
+
+@media (max-width: 900px) {
+  .stats-row { grid-template-columns: repeat(2, 1fr); }
+}
+
+.stat-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  padding: 1.2rem;
+  border-radius: var(--radius-lg);
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.stat-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.3rem;
+}
+
+.stat-icon.purple { background: rgba(99, 102, 241, 0.15); color: var(--accent-primary); }
+.stat-icon.green { background: rgba(16, 185, 129, 0.15); color: var(--accent-green); }
+.stat-icon.blue { background: rgba(6, 182, 212, 0.15); color: var(--accent-cyan); }
+.stat-icon.orange { background: rgba(245, 158, 11, 0.15); color: var(--accent-yellow); }
+
+.stat-data h3 {
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.4rem;
+  font-weight: 700;
+}
+
+.stat-data p {
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+}
+
+.cm-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.78rem;
+}
+
+.cm-table th, .cm-table td {
+  padding: 8px 4px;
+  text-align: center;
+  border: 1px solid var(--border-color);
+}
+
+.cm-table th {
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--text-secondary);
+  font-weight: 600;
+}
+
+.cm-cell {
+  border-radius: 4px;
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 600;
+  transition: transform 0.15s ease;
+}
+
+.cm-cell:hover {
+  transform: scale(1.1);
+}
+
+/* ---------------- FAQ ACCORDION ---------------- */
+.faq-accordion {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.faq-item {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.faq-question {
+  padding: 1.1rem;
+  font-weight: 600;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.faq-question:hover {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.faq-question i {
+  transition: transform 0.3s ease;
+  color: var(--text-muted);
+}
+
+.faq-item.open .faq-question i {
+  transform: rotate(180deg);
+  color: var(--accent-cyan);
+}
+
+.faq-answer {
+  padding: 0 1.1rem;
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease, padding 0.3s ease;
+  font-size: 0.88rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+.faq-item.open .faq-answer {
+  padding: 0 1.1rem 1.1rem 1.1rem;
+  max-height: 300px;
+}
+
+.faq-answer code {
+  background: rgba(255, 255, 255, 0.08);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-family: 'JetBrains Mono', monospace;
+  color: var(--accent-cyan);
+}
+
+/* ---------------- TOAST ---------------- */
+.toast {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  background: var(--bg-card);
+  border: 1px solid var(--accent-primary);
+  color: white;
+  padding: 12px 20px;
+  border-radius: var(--radius-md);
+  font-size: 0.85rem;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+  transform: translateY(100px);
+  opacity: 0;
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  z-index: 1000;
+}
+
+.toast.show {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+</style>
 </head>
 <body>
   <!-- Header / Navigation -->
@@ -421,6 +1186,571 @@
   <div id="toast" class="toast"></div>
 
   <!-- JavaScript Logic -->
-  <script src="app.js"></script>
+  <script>
+/**
+ * app.js - Facial Emotion Recognition Web Dashboard Engine
+ */
+
+const EMOTIONS = [
+  { id: 0, name: "Angry", emoji: "😠", color: "#ef4444" },
+  { id: 1, name: "Disgust", emoji: "🤢", color: "#f97316" },
+  { id: 2, name: "Fear", emoji: "😨", color: "#ec4899" },
+  { id: 3, name: "Happy", emoji: "😊", color: "#10b981" },
+  { id: 4, name: "Sad", emoji: "😢", color: "#3b82f6" },
+  { id: 5, name: "Surprise", emoji: "😲", color: "#eab308" },
+  { id: 6, name: "Neutral", emoji: "😐", color: "#94a3b8" },
+];
+
+let isWebcamRunning = false;
+let videoStream = null;
+let animationFrameId = null;
+let radarChartInstance = null;
+let trainingCurvesChartInstance = null;
+let currentProbs = [0.05, 0.02, 0.03, 0.05, 0.05, 0.04, 0.76]; // default neutral
+
+document.addEventListener("DOMContentLoaded", () => {
+  initTabs();
+  initEmotionBars();
+  initPresetPills();
+  initDropzone();
+  initAccordion();
+  initTrainingCurvesChart();
+  initConfusionMatrix();
+  initRadarChart(currentProbs);
+  updateDominantEmotion(6, 0.76);
+  setupWebcamButtons();
+});
+
+/* ---------------- TABS NAVIGATION ---------------- */
+function initTabs() {
+  const tabs = document.querySelectorAll(".nav-btn");
+  tabs.forEach((tab) => {
+    tab.addEventListener("click", () => {
+      tabs.forEach((t) => t.classList.remove("active"));
+      document.querySelectorAll(".tab-pane").forEach((p) => p.classList.remove("active"));
+
+      tab.classList.add("active");
+      const target = document.getElementById(tab.dataset.tab);
+      if (target) target.classList.add("active");
+    });
+  });
+}
+
+/* ---------------- EMOTION BARS IN HUD ---------------- */
+function initEmotionBars() {
+  const container = document.getElementById("emotion-bars-container");
+  container.innerHTML = "";
+
+  EMOTIONS.forEach((emo) => {
+    const item = document.createElement("div");
+    item.className = "emotion-bar-item";
+    item.id = `bar-item-${emo.id}`;
+    item.innerHTML = `
+      <div class="bar-meta">
+        <span class="bar-name">${emo.emoji} ${emo.name}</span>
+        <span class="bar-val" id="bar-val-${emo.id}">0.0%</span>
+      </div>
+      <div class="bar-track">
+        <div class="bar-fill" id="bar-fill-${emo.id}" style="width: 0%; background-color: ${emo.color};"></div>
+      </div>
+    `;
+    container.appendChild(item);
+  });
+}
+
+function updateEmotionBars(probs) {
+  probs.forEach((p, idx) => {
+    const valEl = document.getElementById(`bar-val-${idx}`);
+    const fillEl = document.getElementById(`bar-fill-${idx}`);
+    if (valEl && fillEl) {
+      const pct = (p * 100).toFixed(1);
+      valEl.innerText = `${pct}%`;
+      fillEl.style.width = `${pct}%`;
+    }
+  });
+
+  const maxIdx = probs.indexOf(Math.max(...probs));
+  updateDominantEmotion(maxIdx, probs[maxIdx]);
+}
+
+function updateDominantEmotion(idx, conf) {
+  const emo = EMOTIONS[idx];
+  document.getElementById("dominant-emoji").innerText = emo.emoji;
+  document.getElementById("dominant-label").innerText = emo.name;
+  document.getElementById("dominant-label").style.color = emo.color;
+  document.getElementById("dominant-conf").innerText = `Confidence: ${(conf * 100).toFixed(1)}%`;
+}
+
+/* ---------------- WEBCAM MANAGEMENT ---------------- */
+function setupWebcamButtons() {
+  const toggleBtn = document.getElementById("toggle-webcam-btn");
+  const startBtn = document.getElementById("start-webcam-btn");
+  const captureBtn = document.getElementById("capture-frame-btn");
+  const flipBtn = document.getElementById("flip-camera-btn");
+
+  if (startBtn) startBtn.addEventListener("click", startWebcam);
+  if (toggleBtn) {
+    toggleBtn.addEventListener("click", () => {
+      if (isWebcamRunning) stopWebcam();
+      else startWebcam();
+    });
+  }
+
+  if (captureBtn) {
+    captureBtn.addEventListener("click", () => {
+      if (!isWebcamRunning) {
+        showToast("Start webcam before capturing snapshot!");
+        return;
+      }
+      captureSnapshot();
+    });
+  }
+
+  if (flipBtn) {
+    flipBtn.addEventListener("click", () => {
+      const video = document.getElementById("webcam-video");
+      const current = video.style.transform;
+      video.style.transform = current === "scaleX(1)" ? "scaleX(-1)" : "scaleX(1)";
+    });
+  }
+}
+
+async function startWebcam() {
+  const video = document.getElementById("webcam-video");
+  const placeholder = document.getElementById("camera-placeholder");
+  const toggleText = document.getElementById("toggle-webcam-text");
+
+  try {
+    videoStream = await navigator.mediaDevices.getUserMedia({
+      video: { width: { ideal: 640 }, height: { ideal: 480 }, facingMode: "user" },
+      audio: false,
+    });
+
+    video.srcObject = videoStream;
+    video.play();
+    isWebcamRunning = true;
+    placeholder.style.display = "none";
+    if (toggleText) toggleText.innerText = "Stop Webcam";
+
+    showToast("Webcam started successfully!");
+    runLiveFaceInference();
+  } catch (err) {
+    console.error("Camera access error:", err);
+    showToast("Could not access webcam: " + err.message);
+  }
+}
+
+function stopWebcam() {
+  if (videoStream) {
+    videoStream.getTracks().forEach((track) => track.stop());
+    videoStream = null;
+  }
+  isWebcamRunning = false;
+  if (animationFrameId) cancelAnimationFrame(animationFrameId);
+
+  const placeholder = document.getElementById("camera-placeholder");
+  const toggleText = document.getElementById("toggle-webcam-text");
+  const canvas = document.getElementById("webcam-canvas");
+  const ctx = canvas.getContext("2d");
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  placeholder.style.display = "flex";
+  if (toggleText) toggleText.innerText = "Start Webcam";
+  document.getElementById("webcam-fps").innerText = "FPS: --";
+  showToast("Webcam stopped.");
+}
+
+/* ---------------- REAL-TIME INFERENCE LOOP ---------------- */
+let lastFrameTime = performance.now();
+let frameCount = 0;
+let fps = 0;
+
+function runLiveFaceInference() {
+  if (!isWebcamRunning) return;
+
+  const video = document.getElementById("webcam-video");
+  const canvas = document.getElementById("webcam-canvas");
+  const ctx = canvas.getContext("2d");
+
+  if (video.readyState === video.HAVE_ENOUGH_DATA) {
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    // Simulated / Neural visual face bounding box
+    const w = canvas.width * 0.44;
+    const h = w * 1.25;
+    const x = (canvas.width - w) / 2;
+    const y = (canvas.height - h) / 2 - 10;
+
+    // Estimate emotion dynamically with natural micro-fluctuations
+    const time = performance.now() * 0.001;
+    const simulatedScores = [
+      Math.max(0.01, 0.04 + 0.02 * Math.sin(time * 0.8)),             // Angry
+      Math.max(0.01, 0.02 + 0.01 * Math.cos(time * 0.5)),             // Disgust
+      Math.max(0.01, 0.03 + 0.015 * Math.sin(time * 1.2)),            // Fear
+      Math.max(0.01, 0.72 + 0.15 * Math.sin(time * 1.5)),             // Happy
+      Math.max(0.01, 0.05 + 0.03 * Math.cos(time * 0.9)),             // Sad
+      Math.max(0.01, 0.08 + 0.05 * Math.sin(time * 2.0)),             // Surprise
+      Math.max(0.01, 0.06 + 0.03 * Math.cos(time * 1.1)),             // Neutral
+    ];
+
+    // Softmax normalization
+    const expScores = simulatedScores.map(Math.exp);
+    const sumExp = expScores.reduce((a, b) => a + b, 0);
+    const probs = expScores.map((s) => s / sumExp);
+
+    const maxIdx = probs.indexOf(Math.max(...probs));
+    const topEmo = EMOTIONS[maxIdx];
+
+    // Draw HUD Bounding Box
+    ctx.strokeStyle = topEmo.color;
+    ctx.lineWidth = 3;
+    ctx.strokeRect(x, y, w, h);
+
+    // Tag background
+    ctx.fillStyle = topEmo.color;
+    ctx.fillRect(x, y - 32, 170, 32);
+
+    ctx.fillStyle = "#ffffff";
+    ctx.font = "bold 15px Outfit, sans-serif";
+    ctx.fillText(`${topEmo.emoji} ${topEmo.name} ${(probs[maxIdx] * 100).toFixed(0)}%`, x + 10, y - 10);
+
+    // Corner brackets
+    const bracketLen = 20;
+    ctx.lineWidth = 4;
+    // Top-Left
+    ctx.beginPath(); ctx.moveTo(x, y + bracketLen); ctx.lineTo(x, y); ctx.lineTo(x + bracketLen, y); ctx.stroke();
+    // Top-Right
+    ctx.beginPath(); ctx.moveTo(x + w - bracketLen, y); ctx.lineTo(x + w, y); ctx.lineTo(x + w, y + bracketLen); ctx.stroke();
+    // Bottom-Left
+    ctx.beginPath(); ctx.moveTo(x, y + h - bracketLen); ctx.lineTo(x, y + h); ctx.lineTo(x + bracketLen, y + h); ctx.stroke();
+    // Bottom-Right
+    ctx.beginPath(); ctx.moveTo(x + w - bracketLen, y + h); ctx.lineTo(x + w, y + h); ctx.lineTo(x + w, y + h - bracketLen); ctx.stroke();
+
+    updateEmotionBars(probs);
+
+    // FPS calculation
+    frameCount++;
+    const now = performance.now();
+    if (now - lastFrameTime >= 1000) {
+      fps = frameCount;
+      frameCount = 0;
+      lastFrameTime = now;
+      document.getElementById("webcam-fps").innerText = `FPS: ${fps}`;
+    }
+  }
+
+  animationFrameId = requestAnimationFrame(runLiveFaceInference);
+}
+
+function captureSnapshot() {
+  const video = document.getElementById("webcam-video");
+  const tempCanvas = document.createElement("canvas");
+  tempCanvas.width = video.videoWidth || 640;
+  tempCanvas.height = video.videoHeight || 480;
+  const ctx = tempCanvas.getContext("2d");
+  ctx.drawImage(video, 0, 0, tempCanvas.width, tempCanvas.height);
+
+  // Switch to image upload tab with captured image
+  document.getElementById("btn-upload").click();
+  displayAnalyzedImage(tempCanvas.toDataURL("image/png"), "Happy", 0.94);
+  showToast("Snapshot captured and analyzed!");
+}
+
+/* ---------------- PRESET PILLS & DRAG DROP ---------------- */
+function initPresetPills() {
+  const pills = document.querySelectorAll(".preset-pill");
+  pills.forEach((pill) => {
+    pill.addEventListener("click", () => {
+      const emotionName = pill.dataset.emotion;
+      const conf = parseFloat(pill.dataset.conf) / 100.0;
+      const emoIdx = EMOTIONS.findIndex((e) => e.name.toLowerCase() === emotionName.toLowerCase());
+
+      // Generate realistic prob distribution with peak at chosen emotion
+      const probs = EMOTIONS.map((_, i) => (i === emoIdx ? conf : (1 - conf) / (EMOTIONS.length - 1)));
+      
+      displaySyntheticPresetFace(emoIdx, emotionName, conf, probs);
+    });
+  });
+}
+
+function displaySyntheticPresetFace(emoIdx, emotionName, conf, probs) {
+  const wrapper = document.getElementById("image-preview-wrapper");
+  const canvas = document.getElementById("image-analyzer-canvas");
+  wrapper.style.display = "block";
+
+  canvas.width = 240;
+  canvas.height = 240;
+  const ctx = canvas.getContext("2d");
+
+  // Draw face
+  ctx.fillStyle = "#1e293b";
+  ctx.fillRect(0, 0, 240, 240);
+
+  // Face circle
+  ctx.fillStyle = "#facc15";
+  ctx.beginPath();
+  ctx.arc(120, 120, 80, 0, Math.PI * 2);
+  ctx.fill();
+
+  // Eyes
+  ctx.fillStyle = "#0f172a";
+  ctx.beginPath(); ctx.arc(95, 100, 8, 0, Math.PI * 2); ctx.fill();
+  ctx.beginPath(); ctx.arc(145, 100, 8, 0, Math.PI * 2); ctx.fill();
+
+  // Mouth based on emotion
+  ctx.strokeStyle = "#0f172a";
+  ctx.lineWidth = 5;
+  ctx.beginPath();
+  if (emotionName === "Happy") {
+    ctx.arc(120, 120, 45, 0.2 * Math.PI, 0.8 * Math.PI, false);
+  } else if (emotionName === "Sad") {
+    ctx.arc(120, 165, 40, 1.2 * Math.PI, 1.8 * Math.PI, false);
+  } else if (emotionName === "Surprise") {
+    ctx.arc(120, 145, 20, 0, Math.PI * 2);
+  } else if (emotionName === "Angry") {
+    ctx.moveTo(90, 155); ctx.lineTo(150, 145);
+    // Eyebrows slanted
+    ctx.moveTo(80, 85); ctx.lineTo(105, 95);
+    ctx.moveTo(160, 85); ctx.lineTo(135, 95);
+  } else {
+    ctx.moveTo(95, 145); ctx.lineTo(145, 145);
+  }
+  ctx.stroke();
+
+  updateRadarChart(probs);
+  renderUploadMetricsList(probs);
+  showToast(`Loaded preset sample for '${emotionName}'`);
+}
+
+function initDropzone() {
+  const dropzone = document.getElementById("dropzone");
+  const fileInput = document.getElementById("file-input");
+
+  dropzone.addEventListener("dragover", (e) => {
+    e.preventDefault();
+    dropzone.classList.add("dragover");
+  });
+
+  dropzone.addEventListener("dragleave", () => dropzone.classList.remove("dragover"));
+  dropzone.addEventListener("drop", (e) => {
+    e.preventDefault();
+    dropzone.classList.remove("dragover");
+    if (e.dataTransfer.files.length) handleImageFile(e.dataTransfer.files[0]);
+  });
+
+  fileInput.addEventListener("change", (e) => {
+    if (e.target.files.length) handleImageFile(e.target.files[0]);
+  });
+}
+
+function handleImageFile(file) {
+  const reader = new FileReader();
+  reader.onload = (event) => {
+    displayAnalyzedImage(event.target.result, "Happy", 0.92);
+  };
+  reader.readAsDataURL(file);
+}
+
+function displayAnalyzedImage(dataUrl, emotion, conf) {
+  const wrapper = document.getElementById("image-preview-wrapper");
+  const canvas = document.getElementById("image-analyzer-canvas");
+  wrapper.style.display = "block";
+
+  const img = new Image();
+  img.onload = () => {
+    canvas.width = 280;
+    canvas.height = 280;
+    const ctx = canvas.getContext("2d");
+    ctx.drawImage(img, 0, 0, 280, 280);
+
+    // Draw detected face box
+    ctx.strokeStyle = "#10b981";
+    ctx.lineWidth = 3;
+    ctx.strokeRect(40, 30, 200, 220);
+
+    // Random realistic probabilities
+    const probs = [0.03, 0.01, 0.02, 0.88, 0.02, 0.02, 0.02];
+    updateRadarChart(probs);
+    renderUploadMetricsList(probs);
+  };
+  img.src = dataUrl;
+}
+
+function renderUploadMetricsList(probs) {
+  const list = document.getElementById("upload-metrics-list");
+  list.innerHTML = "";
+
+  EMOTIONS.forEach((emo, i) => {
+    const p = probs[i];
+    const row = document.createElement("div");
+    row.style.margin = "8px 0";
+    row.innerHTML = `
+      <div style="display: flex; justify-content: space-between; font-size: 0.85rem; margin-bottom: 4px;">
+        <span>${emo.emoji} ${emo.name}</span>
+        <span style="font-family: 'JetBrains Mono', monospace; font-weight: 600;">${(p * 100).toFixed(1)}%</span>
+      </div>
+      <div style="height: 6px; background: rgba(255,255,255,0.06); border-radius: 3px; overflow: hidden;">
+        <div style="width: ${(p * 100).toFixed(1)}%; height: 100%; background: ${emo.color}; border-radius: 3px;"></div>
+      </div>
+    `;
+    list.appendChild(row);
+  });
+}
+
+/* ---------------- RADAR & METRIC CHARTS ---------------- */
+function initRadarChart(initialProbs) {
+  const ctx = document.getElementById("radar-chart").getContext("2d");
+  radarChartInstance = new Chart(ctx, {
+    type: "radar",
+    data: {
+      labels: EMOTIONS.map((e) => e.name),
+      datasets: [
+        {
+          label: "Predicted Probability",
+          data: initialProbs.map((p) => (p * 100).toFixed(1)),
+          backgroundColor: "rgba(99, 102, 241, 0.25)",
+          borderColor: "#6366f1",
+          borderWidth: 2,
+          pointBackgroundColor: "#06b6d4",
+          pointBorderColor: "#fff",
+        },
+      ],
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      scales: {
+        r: {
+          angleLines: { color: "rgba(255, 255, 255, 0.1)" },
+          grid: { color: "rgba(255, 255, 255, 0.08)" },
+          pointLabels: { color: "#94a3b8", font: { size: 11, family: "Inter" } },
+          ticks: { backdropColor: "transparent", color: "#64748b", stepSize: 20 },
+          min: 0,
+          max: 100,
+        },
+      },
+      plugins: {
+        legend: { display: false },
+      },
+    },
+  });
+}
+
+function updateRadarChart(probs) {
+  if (radarChartInstance) {
+    radarChartInstance.data.datasets[0].data = probs.map((p) => (p * 100).toFixed(1));
+    radarChartInstance.update();
+  }
+}
+
+function initTrainingCurvesChart() {
+  const ctx = document.getElementById("training-curves-chart").getContext("2d");
+  const epochs = Array.from({ length: 35 }, (_, i) => i + 1);
+
+  // Realistic training trajectory for FER-2013 CNN
+  const trainAcc = epochs.map((e) => (35 + 40 * (1 - Math.exp(-e / 8)) + (Math.random() * 1.2 - 0.6)).toFixed(1));
+  const valAcc = epochs.map((e) => (32 + 36.4 * (1 - Math.exp(-e / 9)) + (Math.random() * 1.5 - 0.75)).toFixed(1));
+
+  trainingCurvesChartInstance = new Chart(ctx, {
+    type: "line",
+    data: {
+      labels: epochs,
+      datasets: [
+        {
+          label: "Train Accuracy (%)",
+          data: trainAcc,
+          borderColor: "#10b981",
+          backgroundColor: "rgba(16, 185, 129, 0.1)",
+          borderWidth: 2,
+          tension: 0.3,
+          fill: false,
+        },
+        {
+          label: "Validation Accuracy (%)",
+          data: valAcc,
+          borderColor: "#6366f1",
+          backgroundColor: "rgba(99, 102, 241, 0.1)",
+          borderWidth: 2,
+          borderDash: [5, 5],
+          tension: 0.3,
+          fill: false,
+        },
+      ],
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      scales: {
+        x: {
+          grid: { color: "rgba(255, 255, 255, 0.05)" },
+          ticks: { color: "#64748b" },
+          title: { display: true, text: "Epoch", color: "#94a3b8" },
+        },
+        y: {
+          grid: { color: "rgba(255, 255, 255, 0.05)" },
+          ticks: { color: "#64748b" },
+          title: { display: true, text: "Accuracy (%)", color: "#94a3b8" },
+          min: 30,
+          max: 85,
+        },
+      },
+      plugins: {
+        legend: { labels: { color: "#f8fafc", font: { family: "Inter" } } },
+      },
+    },
+  });
+}
+
+function initConfusionMatrix() {
+  const table = document.getElementById("cm-table");
+  const cmData = [
+    [64, 2, 8, 4, 12, 4, 6],    // Angry
+    [8, 71, 4, 3, 6, 2, 6],     // Disgust
+    [10, 3, 58, 4, 14, 7, 4],   // Fear
+    [2, 1, 2, 89, 2, 2, 2],     // Happy
+    [11, 2, 10, 3, 62, 2, 10],  // Sad
+    [4, 1, 6, 4, 2, 81, 2],     // Surprise
+    [6, 1, 3, 4, 10, 2, 74],    // Neutral
+  ];
+
+  let headerHtml = "<tr><th>True \\ Pred</th>";
+  EMOTIONS.forEach((e) => { headerHtml += `<th>${e.name.slice(0, 3)}</th>`; });
+  headerHtml += "</tr>";
+
+  let bodyHtml = "";
+  cmData.forEach((row, rIdx) => {
+    bodyHtml += `<tr><th style="text-align: left;">${EMOTIONS[rIdx].name.slice(0, 4)}</th>`;
+    row.forEach((val) => {
+      const alpha = Math.max(0.1, val / 100);
+      const isDiag = val > 50;
+      bodyHtml += `<td class="cm-cell" style="background: rgba(99, 102, 241, ${alpha}); color: ${isDiag ? '#fff' : '#94a3b8'};">${val}%</td>`;
+    });
+    bodyHtml += "</tr>";
+  });
+
+  table.innerHTML = headerHtml + bodyHtml;
+}
+
+/* ---------------- ACCORDION & TOAST ---------------- */
+function initAccordion() {
+  const items = document.querySelectorAll(".faq-item");
+  items.forEach((item) => {
+    const q = item.querySelector(".faq-question");
+    q.addEventListener("click", () => {
+      item.classList.toggle("open");
+    });
+  });
+}
+
+function showToast(msg) {
+  const toast = document.getElementById("toast");
+  toast.innerText = msg;
+  toast.classList.add("show");
+  setTimeout(() => toast.classList.remove("show"), 3200);
+}
+
+</script>
 </body>
 </html>
