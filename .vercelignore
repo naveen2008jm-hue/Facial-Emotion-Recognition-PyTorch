@@ -1,0 +1,7 @@
+# Ignore Python runtime files from Vercel deployment so it deploys cleanly as a static web dashboard
+requirements.txt
+*.py
+__pycache__/
+checkpoints/
+outputs/
+data/fer2013.csv
