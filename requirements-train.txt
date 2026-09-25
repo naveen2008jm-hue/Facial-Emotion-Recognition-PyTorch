@@ -1,0 +1,13 @@
+# Dependencies for PyTorch Model Training, GPU Acceleration, & OpenCV Webcam Inference
+torch>=2.0.0
+torchvision>=0.15.0
+numpy>=1.23.0
+pandas>=1.5.0
+scikit-learn>=1.2.0
+matplotlib>=3.7.0
+seaborn>=0.12.0
+opencv-python>=4.7.0
+pillow>=9.4.0
+tqdm>=4.65.0
+Flask>=3.0.0
+Flask-Cors>=4.0.0

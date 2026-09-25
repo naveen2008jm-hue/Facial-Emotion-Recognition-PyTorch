@@ -37,8 +37,17 @@ AI project/
 ├── train.py                      # Training loop with validation, weighting, and early stopping
 ├── evaluate.py                   # Test set evaluation, metrics calculation, and confusion matrix
 ├── inference.py                  # Live webcam demo & single image inference with OpenCV
+├── api/
+│   └── index.py                  # Vercel Serverless Function & Flask API entrypoint
+├── app.py                        # Local WSGI Web Server entrypoint
+├── index.html                    # Modern interactive web dashboard frontend
+├── style.css                     # Premium dark-mode UI stylesheet
+├── app.js                        # Client-side webcam/upload AI interaction engine
+├── requirements.txt              # Production web & serverless dependencies (Flask, NumPy, Pillow)
+├── requirements-train.txt        # Full PyTorch & GPU training dependencies
+├── vercel.json                   # Vercel deployment configuration
+├── pyproject.toml                # Vercel entrypoint specification
 ├── sample_data_gen.py            # Quick synthetic data generator for instant pipeline testing
-├── requirements.txt              # Required Python libraries
 └── README.md                     # Project documentation & coursework viva notes
 ```
 
@@ -46,23 +55,28 @@ AI project/
 
 ## 🚀 Quick Start Guide
 
-### 1. Set Up Environment & Install Dependencies
-
-Open PowerShell / Terminal inside this project folder:
+### 1. Run the Web Dashboard (Local or Vercel)
 
 ```bash
-# Create a virtual environment (optional but recommended)
-python -m venv venv
-
-# Activate virtual environment
-# On Windows:
-.\venv\Scripts\activate
-# On Linux/macOS:
-# source venv/bin/activate
-
-# Install required packages
+# Install web dependencies
 pip install -r requirements.txt
+
+# Launch local web server
+python app.py
 ```
+Open **http://localhost:5000** in your browser to access the interactive EmotionAI dashboard.
+
+---
+
+### 2. Full PyTorch Model Training Setup
+
+For training the custom CNN model on GPU / FER-2013 dataset:
+
+```bash
+# Install full PyTorch & OpenCV dependencies
+pip install -r requirements-train.txt
+```
+
 
 ---
 
